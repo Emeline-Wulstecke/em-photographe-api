@@ -1,1 +1,1 @@
-# em-photographe-api
+# em-photographe

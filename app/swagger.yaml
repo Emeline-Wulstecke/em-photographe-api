@@ -1,0 +1,988 @@
+swagger: "2.0"
+info:
+  title: em-photographe API documentation
+  description: Contains all available API endpoints in this codebase
+  version: "1.0.0"
+  termsOfService: "http://swagger.io/terms/"
+host: localhost:3000
+basePath: /
+schemes:
+  - https
+paths:
+
+  # ! ARTICLES
+  /articles:
+
+    # GET /articles => List Articles
+    get:
+      tags:
+        - Article Module
+      summary: List Articles
+      description: API to List all Articles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ArticleRes"
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+    # POST /articles => Create Article
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - Article Module
+      summary: Create Article
+      description: API to Create an Article
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: body
+          name: body
+          description: createArticle() Payload
+          required: true
+          schema:
+            $ref: "#/definitions/ArticleReq"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+  # ! ARTICLES WITH ID
+  /articles/{id}:
+
+    # GET /articles/{id} => Read Article
+    get:
+      tags:
+        - Article Module
+      summary: Read Article
+      description: API to Read an Article
+      parameters:
+      - name: id
+        type: number
+        in: path
+        description: Id of the Article
+        required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/ArticleRes"
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+    # PUT /articles/{id} => Update Article
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - Article Module
+      summary: Update Article
+      description: API to Update an Article
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: id
+          type: number
+          in: path
+          description: Id of the Article
+          required: true
+        - in: body
+          name: body
+          description: updateArticle() Payload
+          required: true
+          schema:
+            $ref: "#/definitions/ArticleReq"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+    # DELETE /articles/{id} => Delete Article
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - Article Module
+      summary: Delete Article
+      description: API to Delete an Article
+      parameters:
+        - name: id
+          type: number
+          in: path
+          description: Id of the Article
+          required: true
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+  # ! AUTH
+  # GET /auth/{id} => Read Avatar
+  /auth/{id}:
+    get:
+      tags:
+        - Auth Module
+      summary: Read Avatar
+      description: API to Read an Avatar
+      parameters:
+        - name: id
+          type: number
+          in: path
+          description: Id of the User
+          required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/AvatarRes"
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+  # POST /auth => Login User
+  /auth:
+    post:
+      tags:
+        - Auth Module
+      summary: Login User
+      description: API to Login the User
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: body
+          name: body
+          description: loginUser() Payload
+          required: true
+          schema:
+            $ref: "#/definitions/AuthReq"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/AuthRes"
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+  # POST /auth/pass => Forgot Pass
+  /auth/pass:
+    post:
+      tags:
+        - Auth Module
+      summary: Forgot Pass
+      description: API to Send a new Password
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: body
+          name: body
+          description: forgotPass() Payload
+          required: true
+          schema:
+            $ref: "#/definitions/PassReq"
+      produces:
+        - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+  # POST /auth/recaptcha => Check Recaptcha
+  /auth/recaptcha:
+    post:
+      tags:
+        - Auth Module
+      summary: Check Recaptcha
+      description: API to Check the Recaptcha
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: body
+          name: body
+          description: checkRecaptcha() Payload
+          required: true
+          schema:
+            $ref: "#/definitions/AuthReq"
+      produces:
+        - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+  # ! GALLERIES
+  /galleries:
+
+    # GET /galleries => List Galleries
+    get:
+      tags:
+        - Gallery Module
+      summary: List Galleries
+      description: API to List all Galleries
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/GalleryRes"
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+    # POST /galleries => Create Gallery
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - Gallery Module
+      summary: Create Gallery
+      description: API to Create a Gallery
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: body
+          name: body
+          description: createGallery() Payload
+          required: true
+          schema:
+            $ref: "#/definitions/GalleryReq"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+  # ! GALLERIES WITH ID
+  /galleries/{id}:
+
+    # GET /galleries/{id} => Read Gallery
+    get:
+      tags:
+        - Gallery Module
+      summary: Read Gallery
+      description: API to Read a Gallery
+      parameters:
+        - name: id
+          type: number
+          in: path
+          description: Id of the Gallery
+          required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/GalleryRes"
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+    # PUT /galleries/{id} => Update Gallery
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - Gallery Module
+      summary: Update Gallery
+      description: API to Update a Gallery
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: id
+          type: number
+          in: path
+          description: Id of the Gallery
+          required: true
+        - in: body
+          name: body
+          description: updateGallery() Payload
+          required: true
+          schema:
+            $ref: "#/definitions/GalleryReq"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+    # DELETE /galleries/{id} => Delete Article
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - Gallery Module
+      summary: Delete Gallery
+      description: API to Delete a Gallery
+      produces:
+      - application/json
+      parameters:
+        - name: id
+          type: number
+          in: path
+          description: Id of the Gallery
+          required: true
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+  # ! IMAGES
+  /images:
+    # GET /images => List Images
+    get:
+      tags:
+        - Image Module
+      summary: List Images
+      description: API to List Images
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ImageRes"
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+    # POST /images => Create Image
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - Image Module
+      summary: Create Image
+      description: API to Create an Image
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: body
+          name: body
+          description: createImage() Payload
+          required: true
+          schema:
+            $ref: "#/definitions/ImageReq"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+  # ! IMAGES WITH ID
+  /images/{id}:
+    # GET /images => List Gallery Images
+    get:
+      tags:
+        - Image Module
+      summary: List Gallery Images
+      description: API to List Gallery Images
+      parameters:
+      - name: id
+        type: number
+        in: path
+        description: Id of the Gallery
+        required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ImageRes"
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+    # PUT /images/{id} => Update Image
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - Image Module
+      summary: Update Image
+      description: API to Update an Image
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: id
+          type: number
+          in: path
+          description: Id of the Image
+          required: true
+        - in: body
+          name: body
+          description: updateImage() Payload
+          required: true
+          schema:
+            $ref: "#/definitions/ImageReq"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Image Updated Successully
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+
+    # DELETE /images/{id} => Delete Image
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - Image Module
+      summary: Delete Image
+      description: API to Delete an Image
+      parameters:
+      - name: id
+        type: number
+        in: path
+        description: Id of the Image
+        required: true
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+  # ! USERS
+  /users:
+
+    # GET /users => List Users
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: List Users
+      description: API to List all Users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/UserRes"
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+    # POST /users => Create User
+    post:
+      tags:
+        - User Module
+      summary: Create User
+      description: API to Create a User
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: body
+          name: body
+          description: createUser() Payload
+          required: true
+          schema:
+            $ref: "#/definitions/UserReq"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+  # ! USERS WITH ID
+  /users/{id}:
+
+    # GET /users/{id} => Read User
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: Read User
+      description: API to Read a User
+      parameters:
+        - name: id
+          type: number
+          in: path
+          description: Id of the User
+          required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/UserRes"
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+    # PUT /users/{id} => Update User
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: Update User
+      description: API to Update a User
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: id
+          type: number
+          in: path
+          description: Id of the User
+          required: true
+        - in: body
+          name: body
+          description: updateUser() Payload
+          required: true
+          schema:
+            $ref: "#/definitions/UserReq"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+    # DELETE /users/{id} => Delete User
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: Delete User
+      description: API to Delete a User
+      parameters:
+        - name: id
+          type: number
+          in: path
+          description: Id of the User
+          required: true
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: "#/definitions/BasicRes"
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+
+  # POST /users/message => Send Message
+  /users/message:
+    post:
+      tags:
+        - User Module
+      summary: Send Message
+      description: API to Send a User Message
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: body
+          name: body
+          description: sendMessage() Payload
+          required: true
+          schema:
+            $ref: "#/definitions/MessageReq"
+      produces:
+        - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: "#/definitions/MessageRes"
+        "500":
+          description: Internal Server Error
+
+# ! TOKEN
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+
+definitions:
+  # ! REQUESTS
+
+  # ARTICLES REQUEST
+  ArticleReq:
+    properties:
+      name:
+        type: string
+        description: article name
+      text:
+        type: string
+        description: article content
+      image:
+        type: string
+        description: article image
+      alt:
+        type: string
+        description: alternative text of article image
+      url:
+        type: string
+        description: article url
+      cat:
+        type: string
+        description: article category
+
+  # AUTH REQUEST
+  AuthReq:
+    properties:
+      email:
+        type: string
+        description: user email
+      pass:
+        type: string
+        description: user password
+
+  # GALLERY REQUEST
+  GalleryReq:
+    properties:
+      name:
+        type: string
+        description: gallery name
+      author:
+        type: string
+        description: gallery author
+
+  # IMAGE REQUEST
+  ImageReq:
+    properties:
+      name:
+        type: string
+        description: image name
+      description:
+        type: string
+        description: image description
+      galleryId:
+        type: number
+        description: gallery id
+
+  # MESSAGE REQUEST
+  MessageReq:
+    properties:
+      email:
+        type: string
+        description: user email
+      subject:
+        type: string
+        description: message subject
+      text:
+        type: string
+        description: message content
+
+  # PASS REQUEST
+  PassReq:
+    properties:
+      email:
+        type: string
+        description: user email
+
+  # USER REQUEST
+  UserReq:
+    properties:
+      name:
+        type: string
+        description: user name
+      email:
+        type: string
+        description: user email
+      image:
+        type: string
+        description: user image
+      password:
+        type: string
+        description: user password
+
+  # ! RESPONSES
+
+  # ARTICLE RESPONSE
+  ArticleRes:
+    type: object
+    properties:
+      id:
+        type: number
+        description: article id
+      name:
+        type: string
+        description: article name
+      text:
+        type: string
+        description: article content
+      image:
+        type: string
+        description: article image
+      alt:
+        type: string
+        description: alternative text of article image
+      url:
+        type: string
+        description: article url
+      likes:
+        type: string
+        description: article likes
+      cat:
+        type: string
+        description: article category
+      createdAt:
+        type: string
+        format: date
+        description: article creation
+      upatedAt:
+        type: string
+        format: date
+        description: article update
+
+  # AUTH RESPONSE
+  AuthRes:
+    type: object
+    properties:
+      userId:
+        type: string
+        description: user id
+      userToken:
+        type: string
+        description: user token
+
+  # AVATAR RESPONSE
+  AvatarRes:
+    type: object
+    properties:
+      name:
+        type: string
+        description: user name
+      image:
+        type: string
+        description: user image
+      role:
+        type: string
+        description: user role
+
+  # BASIC RESPONSE
+  BasicRes:
+    properties:
+      status:
+        type: integer
+        description: status code
+      message:
+        type: string
+        description: confirm message
+
+  # GALLERY RESPONSE
+  GalleryRes:
+    properties:
+      id:
+        type: number
+        description: gallery id
+      name:
+        type: string
+        description: gallery name
+      author:
+        type: string
+        description: gallery author
+      cover:
+        type: string
+        description: gallery cover image
+
+  # IMAGE RESPONSE
+  ImageRes:
+    properties:
+      id:
+        type: number
+        description: image id
+      name:
+        type: string
+        description: image name
+      description:
+        type: string
+        description: image description
+      galleryId:
+        type: number
+        description: gallery id
+      Gallery:
+        type: string
+        description: gallery name
+
+  # MESSAGE RESPONSE
+  MessageRes:
+    type: object
+    properties:
+      status:
+        type: integer
+        description: status code
+      message:
+        type: string
+        description: confirm message
+
+  # USER RESPONSE
+  UserRes:
+    type: object
+    properties:
+      id:
+        type: number
+        description: user id
+      name:
+        type: string
+        description: user name
+      email:
+        type: string
+        description: user email
+      image:
+        type: string
+        description: user image
+      role:
+        type: string
+        description: user role
+      createdAt:
+        type: string
+        format: date
+        description: user creation
+      upatedAt:
+        type: string
+        format: date
+        description: user update

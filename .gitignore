@@ -1,0 +1,5 @@
+.env
+.vscode/
+app/DBData.sql
+img/
+node_modules/
