@@ -22,10 +22,6 @@ module.exports = (Sequelize, DataTypes) => {
       allowNull: false,
       unique: true
     },
-    author: {
-      type: DataTypes.STRING(250),
-      allowNull: false
-    },
     cover: {
       type: DataTypes.STRING(250),
       allowNull: false,

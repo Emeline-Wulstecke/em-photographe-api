@@ -25,17 +25,18 @@ const Image   = db.image;
  * * Checks the gallery data for valid name & author.
  * 
  * @param {string} name - The name of the gallery.
- * @param {string} author - The author of the gallery.
  * @param {object} res - The response object.
  * @return {object} A message indicating that the gallery data is invalid.
  */
-exports.checkGalleryData = (name, author, res) => {
+/**
+ * @return {object} A message indicating that the gallery data is invalid.
+ */
+exports.checkGalleryData = (name, res) => {
   const { CHECK_NAME, STRING_MAX, STRING_MIN } = process.env;
 
-  const IS_NAME_CHECKED   = checkRange(name, STRING_MIN, STRING_MAX);
-  const IS_AUTHOR_CHECKED = checkRange(author, STRING_MIN, STRING_MAX);
+  const IS_NAME_CHECKED = checkRange(name, STRING_MIN, STRING_MAX);
 
-  if (!IS_NAME_CHECKED || !IS_AUTHOR_CHECKED) {
+  if (!IS_NAME_CHECKED) {
     return res.status(403).json({ message: CHECK_NAME });
   }
 }
@@ -117,11 +118,11 @@ exports.createGallery = async (req, res, next) => {
   form.parse(req, async (err, fields) => {
     if (err) { next(err); return }
 
-    const { author, name } = fields;
+    const { name } = fields;
     const cover = getPosterName(name);
 
     try {
-      this.checkGalleryData(name, author, res);
+      this.checkGalleryData(name,res);
 
       const galleries = await Gallery.findAll();
 
@@ -159,10 +160,10 @@ exports.updateGallery = async (req, res, next) => {
   form.parse(req, async (err, fields) => {
     if (err) { next(err); return }
 
-    const { author, name } = fields;
+    const {name } = fields;
 
     try {
-      this.checkGalleryData(name, author, res);
+      this.checkGalleryData(name, res);
 
       const galleries = await Gallery.findAll();
 

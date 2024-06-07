@@ -39,10 +39,6 @@ module.exports = (Sequelize, DataTypes) => {
     url: {
       type: DataTypes.STRING(250)
     },
-    likes: {
-      type: DataTypes.TEXT,
-      defaultValue: "[]"
-    },
     cat: {
       type: DataTypes.STRING(25),
       allowNull: false
