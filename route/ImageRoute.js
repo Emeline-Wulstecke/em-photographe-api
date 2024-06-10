@@ -9,7 +9,6 @@ const { checkAuth } = require("../app/middlewares");
 
 /* Public */
 router.get("/", ImageCtrl.listImages);
-router.get("/:id", ImageCtrl.listGalleryImages);
 
 /* Private */
 router.post("/", checkAuth, ImageCtrl.createImage);

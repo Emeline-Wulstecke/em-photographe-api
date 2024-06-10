@@ -32,16 +32,13 @@ module.exports = (Sequelize, DataTypes) => {
       allowNull: false,
       unique: true
     },
-    pass: {
+    password: {
       type: DataTypes.STRING(250),
       allowNull: false
     },
-    role: {
-      type: DataTypes.STRING(25),
-      allowNull: false
-    },
   }, {
-    tableName: "Users"
+    tableName: "Users",
+    timestamps: false
   });
 
   return UserModel;

@@ -17,7 +17,7 @@ module.exports = (Sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    name: {
+    url: {
       type: DataTypes.STRING(250),
       allowNull: false,
       unique: true
@@ -26,13 +26,9 @@ module.exports = (Sequelize, DataTypes) => {
       type: DataTypes.STRING(250),
       allowNull: false
     },
-    galleryId: {
-      type: DataTypes.SMALLINT.UNSIGNED,
-      allowNull: false,
-      references: {
-        model: "Gallery",
-        key: "id",
-      }
+    gallery: {
+      type: DataTypes.STRING(250),
+      allowNull: false
     }
   }, {
     tableName: "Images",
