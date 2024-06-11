@@ -7,11 +7,10 @@ const db          = require("../model");
 
 require("dotenv").config();
 
-const { checkEmail, checkRange, checkPass, getMailer, getMessage, getName, setThumbnail } = require("../app/middlewares");
-const { IMG_EXT, IMG_URL, THUMB_URL, USER_NOT_FOUND } = process.env;
+const { checkEmail, checkRange, checkPassword, getMailer, getMessage, getName } = require("../app/middlewares");
+const { IMG_EXT, IMG_URL, USER_NOT_FOUND } = process.env;
 
 const USERS_IMG   = `${IMG_URL}users/`;
-const USERS_THUMB = `${THUMB_URL}users/`;
 
 const form = formidable({ uploadDir: USERS_IMG, keepExtensions: true });
 
@@ -25,19 +24,17 @@ const User = db.user;
  *
  * @param {string} name - The user's name.
  * @param {string} email - The user's email.
- * @param {string} role - The user's role.
  * @param {object} res - The response object.
  * @return {object} - JSON response with an error message if any validation fails.
  */
-exports.checkUserData = (name, email, role, res) => {
-  const { CHECK_EMAIL, CHECK_NAME, CHECK_ROLE, STRING_MAX, STRING_MIN } = process.env;
+exports.checkUserData = (name, email, res) => {
+  const { CHECK_EMAIL, CHECK_NAME, STRING_MAX, STRING_MIN } = process.env;
 
   const IS_NAME_CHECKED   = checkRange(name, STRING_MIN, STRING_MAX);
   const IS_EMAIL_CHECKED  = checkEmail(email);
-  const IS_ROLE_CHECKED   = checkRange(role, STRING_MIN, STRING_MAX);
 
-  if (!IS_NAME_CHECKED || !IS_EMAIL_CHECKED || !IS_ROLE_CHECKED) {
-    return res.status(403).json({ message: CHECK_NAME || CHECK_EMAIL || CHECK_ROLE });
+  if (!IS_NAME_CHECKED || !IS_EMAIL_CHECKED) {
+    return res.status(403).json({ message: CHECK_NAME || CHECK_EMAIL });
   }
 }
 
@@ -45,14 +42,14 @@ exports.checkUserData = (name, email, role, res) => {
  * ? CHECK USER PASSWORD
  * * Checks if the user password is valid.
  *
- * @param {string} pass - The user password to be checked.
+ * @param {string} password - The user password to be checked.
  * @param {object} res - The response object.
  * @return {object} - The response object with an error message if the password is invalid.
  */
-exports.checkUserPass = (pass, res) => {
-  const { CHECK_PASS } = process.env;
+exports.checkUserPassword = (password, res) => {
+  const { CHECK_PASSWORD } = process.env;
 
-  if (!checkPass(pass)) return res.status(403).json({ message: CHECK_PASS });
+  if (!checkPassword(password)) return res.status(403).json({ message: CHECK_PASSWORD });
 }
 
 /**
@@ -83,8 +80,6 @@ exports.checkUserUnique = (name, email, user, res) => {
 exports.setImage = async (input, output) => {
   const INPUT   = `users/${input}`;
   const OUTPUT  = `users/${output}`;
-
-  await setThumbnail(INPUT, OUTPUT);
 }
 
 //! ******************** PUBLIC ********************
@@ -105,12 +100,12 @@ exports.createUser = async (req, res, next) => {
   form.parse(req, async (err, fields, files) => {
     if (err) { next(err); return }
 
-    const { name, email, role, pass } = fields;
+    const { name, email, password } = fields;
     const { image } = files;
 
     try {
-      this.checkUserData(name, email, role, res);
-      this.checkUserPass(pass, res);
+      this.checkUserData(name, email, res);
+      this.checkUserPassword(password, res);
 
       const users = await User.findAll();
       if (!users) return res.status(404).json({ message: USER_NOT_FOUND });
@@ -126,9 +121,9 @@ exports.createUser = async (req, res, next) => {
         await fs.promises.unlink(USERS_IMG + image.newFilename);
       }
 
-      const hash = await bcrypt.hash(pass, 10);
+      const hash = await bcrypt.hash(password, 10);
 
-      await User.create({ ...fields, image: IMG, pass: hash });
+      await User.create({ ...fields, image: IMG, password: hash });
       res.status(201).json({ message: USER_CREATED });
 
     } catch (error) {
@@ -187,9 +182,6 @@ exports.listUsers = async (req, res) => {
       name: user.name,
       email: user.email,
       image: user.image,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
     }));
 
     res.status(200).json(usersList);
@@ -233,11 +225,11 @@ exports.updateUser = async (req, res, next) => {
   form.parse(req, async (err, fields, files) => {
     if (err) { next(err); return }
 
-    const { name, email, role, pass } = fields;
+    const { name, email, password } = fields;
     const { image } = files;
 
     try {
-      this.checkUserData(name, email, role, res);
+      this.checkUserData(name, email, res);
 
       const users = await User.findAll();
 
@@ -252,7 +244,6 @@ exports.updateUser = async (req, res, next) => {
       let img = users.find(user => user.id === ID)?.image;
 
       if (image && image.newFilename) {
-        await fs.promises.unlink(USERS_THUMB + img);
 
         img = `${getName(name)}-${Date.now()}.${IMG_EXT}`
 
@@ -262,11 +253,11 @@ exports.updateUser = async (req, res, next) => {
 
       let user;
 
-      if (pass) {
-        this.checkUserPass(pass, res);
-        const hash = await bcrypt.hash(pass, 10);
+      if (password) {
+        this.checkUserPassword(password, res);
+        const hash = await bcrypt.hash(password, 10);
 
-        user = { ...fields, image: img, pass: hash };
+        user = { ...fields, image: img, password: hash };
 
       } else { 
         user = { ...fields, image: img };
@@ -300,8 +291,6 @@ exports.deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: USER_NOT_FOUND });
     }
-
-    await fs.promises.unlink(USERS_THUMB + user.image);
 
     await User.destroy({ where: { id: ID }});
     res.status(204).json({ message: USER_DELETED });
