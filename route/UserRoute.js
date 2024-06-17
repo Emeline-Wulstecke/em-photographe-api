@@ -11,7 +11,7 @@ router.post("/", UserCtrl.createUser);
 router.post("/message", UserCtrl.sendMessage);
 
 /* Private */
-router.get("/",checkAuth, UserCtrl.listUsers);
+router.get("/", UserCtrl.listUsers);
 router.get("/:id",checkAuth, UserCtrl.readUser);
 router.put("/:id", checkAuth, UserCtrl.updateUser);
 router.delete("/:id", checkAuth, UserCtrl.deleteUser);

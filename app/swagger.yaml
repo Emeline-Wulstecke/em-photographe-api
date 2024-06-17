@@ -213,22 +213,22 @@ paths:
         "500":
           description: Internal Server Error
 
-  # POST /auth/pass => Forgot Pass
-  /auth/pass:
+  # POST /auth/password => Forgot Password
+  /auth/password:
     post:
       tags:
         - Auth Module
-      summary: Forgot Pass
+      summary: Forgot Password
       description: API to Send a new Password
       consumes:
         - multipart/form-data
       parameters:
         - in: body
           name: body
-          description: forgotPass() Payload
+          description: forgotPassword() Payload
           required: true
           schema:
-            $ref: "#/definitions/PassReq"
+            $ref: "#/definitions/PasswordReq"
       produces:
         - application/json
       responses:
@@ -776,7 +776,7 @@ definitions:
       email:
         type: string
         description: user email
-      pass:
+      password:
         type: string
         description: user password
 
@@ -816,8 +816,8 @@ definitions:
         type: string
         description: message content
 
-  # PASS REQUEST
-  PassReq:
+  # PASSWORD REQUEST
+  PasswordReq:
     properties:
       email:
         type: string

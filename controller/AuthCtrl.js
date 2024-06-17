@@ -31,8 +31,8 @@ exports.readAvatar = async (req, res) => {
     const ID    = parseInt(req.params.id, 10);
     const user  = await User.findByPk(ID);
 
-    const { name, image, role } = user;
-    const avatar = { name, image, role };
+    const { name, image } = user;
+    const avatar = { name, image };
 
     res.status(200).json(avatar);
 
@@ -80,7 +80,7 @@ exports.loginUser = async (req, res, next) => {
   form.parse(req, async (err, fields) => {
     if (err) { next(err); return }
 
-    const { email, pass } = fields;
+    const { email, password } = fields;
 
     try {
       const user = await User.findOne({ where: { email: email }});
@@ -89,7 +89,7 @@ exports.loginUser = async (req, res, next) => {
         return res.status(404).json({ message: USER_NOT_FOUND });
       }
 
-      await setAuth(pass, user, res);
+      await setAuth(password, user, res);
 
     } catch (error) {
       res.status(401).json({ message: AUTH_LOGIN });
@@ -107,15 +107,15 @@ exports.loginUser = async (req, res, next) => {
  * @return {Object} A message indicating that the password was sent.
  * @throws {Error} If the user is not found in the database.
  */
-exports.forgotPass = async (req, res, next) => {
+exports.forgotPassword = async (req, res, next) => {
   const { AUTH_MESSAGE, CHECK_EMAIL, DISPO_EMAIL_REF, USER_NOT_PASS, USER_NOT_UPDATED } = process.env;
 
   form.parse(req, async (err, fields) => {
     if (err) { next(err); return }
 
     const { email, html } = fields;
-    const pass  = getPassword();
-    fields.html = `<p>${html}</p><b>${pass}</b>`;
+    const password  = getPassword();
+    fields.html = `<p>${html}</p><b>${password}</b>`;
 
     if (!checkEmail(email)) return res.status(403).json({ message: CHECK_EMAIL });
 
@@ -126,8 +126,8 @@ exports.forgotPass = async (req, res, next) => {
       const user = await User.findOne({ where: { email: email }});
       if (!user) return res.status(403).json({ message: DISPO_EMAIL_REF });
     
-      const hash    = await bcrypt.hash(pass, 10);
-      const newUser = { ...user, pass: hash };
+      const hash    = await bcrypt.hash(password, 10);
+      const newUser = { ...user, password: hash };
     
       await User.update(newUser, { where: { id: user.id }});
     
@@ -140,7 +140,7 @@ exports.forgotPass = async (req, res, next) => {
       } else if (err.name === 'SequelizeValidationError') {
         res.status(400).json({ message: USER_NOT_UPDATED });
       } else {
-        res.status(400).json({ message: USER_NOT_PASS });
+        res.status(400).json({ message: USER_NOT_PASSWORD });
       }
     }
   })
